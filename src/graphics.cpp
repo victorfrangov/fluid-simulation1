@@ -4,14 +4,15 @@
 #include "graphics.h"
 #include "logo.h"
 
+#include <iostream>
+
 Graphics::Graphics() {
     SDL_Init(SDL_INIT_VIDEO);
 
     SDL_CreateWindowAndRenderer("Fluid Simulation", globals::SCREEN_SIZE, globals::SCREEN_SIZE, SDL_WINDOW_RESIZABLE, &this->_window, &this->_renderer);
     SDL_SetRenderLogicalPresentation(this->_renderer, globals::SCREEN_SIZE, globals::SCREEN_SIZE, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-    SDL_IOStream* io = SDL_IOFromMem(logo_ico, logo_ico_len);
-
+    SDL_IOStream* io = SDL_IOFromMem(logo_png, logo_png_len);
     SDL_Surface* surface = IMG_Load_IO(io, 1);
     SDL_SetWindowIcon(this->_window, surface);
 }

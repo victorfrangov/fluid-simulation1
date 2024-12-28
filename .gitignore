@@ -11,6 +11,7 @@
 *.sln.docstates
 CMakeSettings.json
 vcpkg/
+res/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

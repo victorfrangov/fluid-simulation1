@@ -18,7 +18,7 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
 endif()
 
 # Add vcpkg toolchain file
-include("C:/dev/VS-GIT/fluid-simulation-cmake/vcpkg/scripts/buildsystems/vcpkg.cmake")
+include("vcpkg/scripts/buildsystems/vcpkg.cmake")
 
 target_include_directories(${PROJECT_NAME} PRIVATE "include")
 
