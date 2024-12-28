@@ -8,7 +8,6 @@
 
 struct SDL_Window;
 struct SDL_Renderer;
-struct SDL_Rect;
 struct SDL_Texture;
 
 class SDL_FRect;
