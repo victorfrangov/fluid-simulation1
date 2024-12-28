@@ -1,6 +1,4 @@
-# Fluid Simulation
-
-## Navier-Stokes Equations
+# Fluid Simulation with Navier-Stokes Equations
 
 Make sure to install vcpkg inside the repo and install the following package:
 ```
