@@ -1,6 +1,4 @@
-#ifndef GRAPHICS_H
-#define GRAPHICS_H
-
+#pragma once
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include "imgui.h"
@@ -10,6 +8,8 @@
 
 #include "globals.h"
 
+#include "imguiBackend.h"
+
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;
@@ -18,9 +18,10 @@ class SDL_FRect;
 class Graphics {
 public:
     Graphics();
+
     ~Graphics();
 
-    void drawImGui();
+    void draw();
 
     void blitSurface(SDL_Texture* p_texture, SDL_FRect* p_src, SDL_FRect* p_dst);
 
@@ -28,15 +29,12 @@ public:
 
     void clear();
 
-    void handleEvent(SDL_Event& event);
+    void handleEvent(SDL_Event& p_event);
 
     SDL_Renderer* getRenderer() const;
 
 private:
+    ImguiBackend* _imguiBackend;
     SDL_Window* _window;
     SDL_Renderer* _renderer;
-    ImGuiIO& _io;
-    SDL_GLContext _glContext;
-    const char* _glslVersion;
 };
-#endif

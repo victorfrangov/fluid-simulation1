@@ -56,7 +56,7 @@ void Fluid::draw(Uint64 p_currentFPS, Uint64 p_elapsedTime) {
 
     this->_logic.draw(this->_graphics);
 
-    this->_graphics.drawImGui();
+    this->_graphics.draw();
 
     this->_graphics.flip();
 }
@@ -103,12 +103,6 @@ void Fluid::handleInput(Input &p_input) {
             this->_logic.addDensity(dt);
             this->_mouseHoldStartTime = currentTime;
         }
+        this->_graphics.handleEvent(e);
     }
-
-    if (p_input.wasKeyPressed(SDL_SCANCODE_Q)) {
-        this->_running = false;
-        return;
-    }
-
-    this->_graphics.handleEvent(e); //Process events
 }

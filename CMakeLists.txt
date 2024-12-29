@@ -34,7 +34,7 @@ if(APPLE)
     )
 elseif(WIN32)
     execute_process(
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install sdl3:x64-windows imgui:x64-windows imgui[opengl3-binding]:x64-windows
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install gl3w:x64-windows sdl3:x64-windows imgui:x64-windows imgui[opengl3-binding]:x64-windows
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 else()
@@ -74,7 +74,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE "include")
 find_package(SDL3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 imgui::imgui OpenGL::GL)
+find_package(gl3w CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 imgui::imgui OpenGL::GL unofficial::gl3w::gl3w)
 
 
 # FetchContent for SDL3_image
@@ -90,13 +91,13 @@ FetchContent_MakeAvailable(SDL3_image)
 FetchContent_Declare(
   imgui
   GIT_REPOSITORY https://github.com/ocornut/imgui.git
-  GIT_TAG master
+  GIT_TAG v1.91.6
 )
 FetchContent_MakeAvailable(imgui)
 
 # Add include directories _deps
 target_include_directories(${PROJECT_NAME} PRIVATE ${SDL3_image_SOURCE_DIR}/include)
-target_include_directories(${PROJECT_NAME} PRIVATE ${imgui_SOURCE_DIR}/backends)
+target_include_directories(${PROJECT_NAME} PRIVATE ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
 
 # Specify the paths to the ImGui backend files
 set(IMGUI_BACKEND_SOURCES
