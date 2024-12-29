@@ -15,7 +15,7 @@ if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg")
     )
     if(WIN32)
         execute_process(
-            COMMAND ./vcpkg/bootstrap-vcpkg.bat
+            COMMAND .\\vcpkg\\bootstrap-vcpkg.bat
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         )
     else()
@@ -26,20 +26,20 @@ if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg")
     endif()
 endif()
 
-# Install SDL3 packages based on platform
+# Install packages based on platform
 if(APPLE)
     execute_process(
-        COMMAND ./vcpkg/vcpkg install sdl3:arm64-osx
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install sdl3:arm64-osx
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 elseif(WIN32)
     execute_process(
-        COMMAND ./vcpkg/vcpkg install sdl3:x64-windows
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install sdl3:x64-windows imgui:x64-windows imgui[opengl3-binding]:x64-windows
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 else()
     execute_process(
-        COMMAND ./vcpkg/vcpkg install sdl3:x64-linux
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install sdl3:x64-linux
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif()
@@ -72,7 +72,10 @@ target_include_directories(${PROJECT_NAME} PRIVATE "include")
 
 # Find SDL3 package
 find_package(SDL3 CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3)
+find_package(imgui CONFIG REQUIRED)
+find_package(OpenGL REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 imgui::imgui OpenGL::GL)
+
 
 # FetchContent for SDL3_image
 include(FetchContent)
@@ -83,10 +86,28 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(SDL3_image)
 
-# Add include directories for SDL3_image
-target_include_directories(${PROJECT_NAME} PRIVATE ${SDL3_image_SOURCE_DIR}/include)
+# FetchContent for ImGui
+FetchContent_Declare(
+  imgui
+  GIT_REPOSITORY https://github.com/ocornut/imgui.git
+  GIT_TAG master
+)
+FetchContent_MakeAvailable(imgui)
 
-# Link SDL3 and SDL3_image to your project
+# Add include directories _deps
+target_include_directories(${PROJECT_NAME} PRIVATE ${SDL3_image_SOURCE_DIR}/include)
+target_include_directories(${PROJECT_NAME} PRIVATE ${imgui_SOURCE_DIR}/backends)
+
+# Specify the paths to the ImGui backend files
+set(IMGUI_BACKEND_SOURCES
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp"
+)
+
+# Add the ImGui backend files to the project
+target_sources(${PROJECT_NAME} PRIVATE ${IMGUI_BACKEND_SOURCES})
+
+# Link SDL3_image to your project
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image)
 
 # Copy DLLs only on Windows

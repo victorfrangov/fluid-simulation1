@@ -56,6 +56,8 @@ void Fluid::draw(Uint64 p_currentFPS, Uint64 p_elapsedTime) {
 
     this->_logic.draw(this->_graphics);
 
+    this->_graphics.drawImGui();
+
     this->_graphics.flip();
 }
 
@@ -107,4 +109,6 @@ void Fluid::handleInput(Input &p_input) {
         this->_running = false;
         return;
     }
+
+    this->_graphics.handleEvent(e); //Process events
 }
