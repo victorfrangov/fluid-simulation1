@@ -2,6 +2,7 @@
 
 #include "graphics.h"
 
+class Graphics;
 
 class Logic {
 public:
@@ -14,7 +15,6 @@ public:
 
 	void draw(Graphics &p_graphics);
 	void parseMousePos();
-	void drawGrid(Graphics &p_graphics);
 	void update(Uint64 p_dt);
 	void addDensity(Uint64 p_dt);
 

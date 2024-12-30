@@ -10,7 +10,8 @@ namespace {
 }
 
 Fluid::Fluid() :
-    _running(true)
+    _running(true),
+    _graphics(this->_logic)
 {
     this->gameLoop();
 }
@@ -54,8 +55,6 @@ void Fluid::gameLoop() {
 void Fluid::draw(Uint64 p_currentFPS, Uint64 p_elapsedTime) {
     this->_graphics.clear();
 
-    this->_logic.draw(this->_graphics);
-
     this->_graphics.draw();
 
     this->_graphics.flip();
@@ -81,13 +80,6 @@ void Fluid::handleInput(Input &p_input) {
             this->_running = false;
             return;
         }
-        /*else if (e.type == SDL_EVENT_MOUSE_MOTION && mouse.button == SDL_BUTTON_LEFT) {
-            this->_logic.parseMousePos();
-            this->_logic.addDensity((mouse.timestamp / 1e+6) - (SDL_GetTicks()));
-        }*/
-        /*else if (mouse.button == SDL_BUTTON_LEFT) {
-            this->_logic.parseMousePos();
-        }*/
         else if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN && mouse.button == SDL_BUTTON_LEFT) {
             this->_mouseHeld = true;
             this->_mouseHoldStartTime = SDL_GetTicks();

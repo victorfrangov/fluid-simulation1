@@ -5,9 +5,11 @@
 #include "logo.h"
 #include "imguiBackend.h"
 
-Graphics::Graphics() {
+Graphics::Graphics(Logic& p_logic) : _logic(p_logic) {
     SDL_Init(SDL_INIT_VIDEO);
+    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengl");
 
+    //Make it borderless??
     SDL_CreateWindowAndRenderer("Fluid Simulation", globals::SCREEN_SIZE, globals::SCREEN_SIZE, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE, &this->_window, &this->_renderer);
     SDL_SetRenderLogicalPresentation(this->_renderer, globals::SCREEN_SIZE, globals::SCREEN_SIZE, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
@@ -15,7 +17,7 @@ Graphics::Graphics() {
     SDL_Surface* surface = IMG_Load_IO(io_image, 1);
     SDL_SetWindowIcon(this->_window, surface);
 
-    this->_imguiBackend = new ImguiBackend(_window);
+    this->_imguiBackend = new ImguiBackend(this->_window, this->_logic);
 }
 
 Graphics::~Graphics() {
@@ -26,7 +28,7 @@ Graphics::~Graphics() {
 }
 
 void Graphics::draw() {
-    this->_imguiBackend->drawImgui();
+    this->_imguiBackend->drawImgui(*this);
 }
 
 void Graphics::blitSurface(SDL_Texture* p_texture, SDL_FRect* p_src, SDL_FRect* p_dst) {
@@ -38,7 +40,7 @@ void Graphics::flip() {
         SDL_RenderPresent(this->_renderer);
     }
     else {
-        SDL_GL_SwapWindow(this->_window);
+        //SDL_GL_SwapWindow(this->_window);
     }
 }
 

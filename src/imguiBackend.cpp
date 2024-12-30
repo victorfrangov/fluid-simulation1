@@ -1,18 +1,5 @@
 #include "imguiBackend.h"
 #include <iostream>
-//#include <GLFW/glfw3.h>
-
-void checkOpenGLError(const char* stmt, const char* fname, int line) {
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR) {
-        std::cerr << "OpenGL error " << err << " at " << fname << ":" << line << " for " << stmt << std::endl;
-    }
-}
-
-#define GL_CHECK(stmt) do { \
-    stmt; \
-    checkOpenGLError(#stmt, __FILE__, __LINE__); \
-} while (0)
 
 ImGuiIO* io = nullptr;
 
@@ -20,7 +7,10 @@ static void initImGuiIO() {
     io = &ImGui::GetIO();
 }
 
-ImguiBackend::ImguiBackend(SDL_Window* p_window) : _window(p_window) {
+ImguiBackend::ImguiBackend(SDL_Window* p_window, Logic& p_logic) :
+    _window(p_window), 
+    _logic(p_logic)
+{
 #if defined(__APPLE__)
     // GL 3.2 Core + GLSL 150
     this->_glslVersion = "#version 150";
@@ -53,7 +43,7 @@ ImguiBackend::~ImguiBackend(){
     SDL_GL_DestroyContext(this->_glContext);
 }
 
-void ImguiBackend::drawImgui() {
+void ImguiBackend::drawImgui(Graphics &p_graphics) {
     // Update display size
     int display_w, display_h;
     SDL_GetWindowSizeInPixels(this->_window, &display_w, &display_h);
@@ -66,6 +56,9 @@ void ImguiBackend::drawImgui() {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
+
+    if (show_demo_window)
+        ImGui::ShowDemoWindow();
 
     static float f = 0.0f;
     static int counter = 0;
@@ -86,13 +79,16 @@ void ImguiBackend::drawImgui() {
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io->Framerate, io->Framerate);
     ImGui::End();
 
+    this->_logic.draw(p_graphics);
+
     // Rendering
     ImGui::Render();
     glViewport(0, 0, (int)io->DisplaySize.x, (int)io->DisplaySize.y);
     glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
     glClear(GL_COLOR_BUFFER_BIT);
+
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    //SDL_GL_SwapWindow(this->_window);
+    SDL_GL_SwapWindow(this->_window);
 }
 
 void ImguiBackend::handleEvent(SDL_Event& p_event) {

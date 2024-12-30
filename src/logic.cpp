@@ -12,7 +12,6 @@ Logic::~Logic()
 {}
 
 void Logic::draw(Graphics &p_graphics) {
-    // Set the draw color to white
     SDL_SetRenderDrawColor(p_graphics.getRenderer(), 255, 255, 255, 255);
 
     for (int x = 0; x <= globals::SCREEN_SIZE; x += globals::GRID_SIZE) { //vertical lines
@@ -24,16 +23,7 @@ void Logic::draw(Graphics &p_graphics) {
     }
 
     if (this->_mouseX != NULL && this->_mouseY != NULL) {
-        this->drawGrid(p_graphics);
-    }
-}
-
-void Logic::parseMousePos() {
-    SDL_GetMouseState(&this->_mouseX, &this->_mouseY);
-}
-
-void Logic::drawGrid(Graphics &p_graphics) {
-    SDL_SetRenderDrawBlendMode(p_graphics.getRenderer(), SDL_BLENDMODE_BLEND);
+        SDL_SetRenderDrawBlendMode(p_graphics.getRenderer(), SDL_BLENDMODE_BLEND);
         for (int a = 0; a < globals::N * globals::N; a++) {
             if (this->_densityGrid[a]) {
                 SDL_SetRenderDrawColor(p_graphics.getRenderer(), 255, 0, 0, this->_densityGrid[a]);
@@ -50,6 +40,11 @@ void Logic::drawGrid(Graphics &p_graphics) {
                 SDL_RenderFillRect(p_graphics.getRenderer(), &rect);
             }
         }
+    }
+}
+
+void Logic::parseMousePos() {
+    SDL_GetMouseState(&this->_mouseX, &this->_mouseY);
 }
 
 void Logic::update(Uint64 p_dt) {

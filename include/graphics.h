@@ -8,16 +8,19 @@
 
 #include "globals.h"
 
-#include "imguiBackend.h"
+class ImguiBackend;
+
+//#include "imguiBackend.h"
 
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;
 class SDL_FRect;
+class Logic;
 
 class Graphics {
 public:
-    Graphics();
+    Graphics(Logic& p_logic);
 
     ~Graphics();
 
@@ -35,6 +38,7 @@ public:
 
 private:
     ImguiBackend* _imguiBackend;
+    Logic& _logic;
     SDL_Window* _window;
     SDL_Renderer* _renderer;
 };
