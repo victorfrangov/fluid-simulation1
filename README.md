@@ -1,9 +1,6 @@
 # Fluid Simulation with Navier-Stokes Equations
 
-Make sure to install vcpkg inside the repo and install the following package:
-```
-vcpkg install sdl3
-```
+CMake will download all dependencies with vcpkg
 
 CMake links the toolkit with a relative path. If you vcpkg.cmake is somewhere else, you will need to update the CMakeLists.txt file.
 
