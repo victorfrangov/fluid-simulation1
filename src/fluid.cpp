@@ -80,20 +80,23 @@ void Fluid::handleInput(Input &p_input) {
             this->_running = false;
             return;
         }
-        else if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN && mouse.button == SDL_BUTTON_LEFT) {
-            this->_mouseHeld = true;
-            this->_mouseHoldStartTime = SDL_GetTicks();
-        }
-        else if (e.type == SDL_EVENT_MOUSE_BUTTON_UP && mouse.button == SDL_BUTTON_LEFT) {
-            this->_mouseHeld = false;
-        }
 
-        if (this->_mouseHeld) {
-            Uint64 currentTime = SDL_GetTicks();
-            Uint64 dt = currentTime - this->_mouseHoldStartTime;
-            this->_logic.parseMousePos();
-            this->_logic.addDensity(dt);
-            this->_mouseHoldStartTime = currentTime;
+        if (!(ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))) {
+            if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN && mouse.button == SDL_BUTTON_LEFT) {
+                this->_mouseHeld = true;
+                this->_mouseHoldStartTime = SDL_GetTicks();
+            }
+            else if (e.type == SDL_EVENT_MOUSE_BUTTON_UP && mouse.button == SDL_BUTTON_LEFT) {
+                this->_mouseHeld = false;
+            }
+
+            if (this->_mouseHeld) {
+                Uint64 currentTime = SDL_GetTicks();
+                Uint64 dt = currentTime - this->_mouseHoldStartTime;
+                this->_logic.parseMousePos();
+                this->_logic.addDensity(dt);
+                this->_mouseHoldStartTime = currentTime;
+            }
         }
         this->_graphics.handleEvent(e);
     }

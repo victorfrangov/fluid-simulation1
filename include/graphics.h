@@ -15,8 +15,6 @@
 #include "globals.h"
 #include "logic.h"
 
-//class ImguiBackend;
-
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;
@@ -42,7 +40,6 @@ public:
     SDL_Renderer* getRenderer() const;
 
 private:
-    //ImguiBackend* _imguiBackend;
     Logic& _logic;
     SDL_Window* _window;
     SDL_Renderer* _renderer;

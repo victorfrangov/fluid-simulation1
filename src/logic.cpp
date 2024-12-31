@@ -1,5 +1,6 @@
 #include "logic.h"
 #include <SDL3/SDL.h>
+#include <vector>
 
 template<typename T1, typename T2>
 constexpr auto IX(T1 i, T2  j) { return ((i) + (globals::N) * (j)); }
@@ -13,13 +14,14 @@ Logic::~Logic()
 void Logic::draw(Graphics &p_graphics) {
     SDL_SetRenderDrawColor(p_graphics.getRenderer(), 255, 255, 255, 255);
 
-    for (int x = 0; x <= globals::SCREEN_SIZE; x += globals::GRID_SIZE) { //vertical lines
+    for (int x = 0; x <= globals::SCREEN_SIZE; x += globals::GRID_SIZE) { // vertical lines
         SDL_RenderLine(p_graphics.getRenderer(), x, 0, x, globals::SCREEN_SIZE + globals::OFFSET);
     }
 
-    for (int y = globals::OFFSET; y <= globals::SCREEN_SIZE + globals::OFFSET; y += globals::GRID_SIZE) { //horizontal lines
+    for (int y = globals::OFFSET; y <= globals::SCREEN_SIZE + globals::OFFSET; y += globals::GRID_SIZE) { // horizontal lines
         SDL_RenderLine(p_graphics.getRenderer(), 0, y, globals::SCREEN_SIZE, y);
     }
+
 
     if (this->_mouseX != NULL && this->_mouseY != NULL) {
         SDL_SetRenderDrawBlendMode(p_graphics.getRenderer(), SDL_BLENDMODE_BLEND);
@@ -44,6 +46,8 @@ void Logic::draw(Graphics &p_graphics) {
 
 void Logic::parseMousePos() {
     SDL_GetMouseState(&this->_mouseX, &this->_mouseY);
+
+    //Boudaries
     if (this->_mouseX <= 0) this->_mouseX = 1;
     if (this->_mouseX >= globals::SCREEN_SIZE) this->_mouseX = globals::SCREEN_SIZE - 1;
     if (this->_mouseY < globals::OFFSET) this->_mouseY = globals::OFFSET;
