@@ -34,7 +34,7 @@ if(APPLE)
     )
 elseif(WIN32)
     execute_process(
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install gl3w:x64-windows sdl3:x64-windows imgui:x64-windows imgui[opengl3-binding]:x64-windows
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install angle:x64-windows gl3w:x64-windows sdl3:x64-windows imgui:x64-windows imgui[opengl3-binding]:x64-windows
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 else()
@@ -70,13 +70,11 @@ include("vcpkg/scripts/buildsystems/vcpkg.cmake")
 
 target_include_directories(${PROJECT_NAME} PRIVATE "include")
 
-# Find SDL3 package
+add_definitions(-DIMGUI_IMPL_SDL_RENDERER)
+
 find_package(SDL3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
-find_package(OpenGL REQUIRED)
-find_package(gl3w CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 imgui::imgui OpenGL::GL unofficial::gl3w::gl3w)
-
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 imgui::imgui)
 
 # FetchContent for SDL3_image
 include(FetchContent)
@@ -102,7 +100,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${imgui_SOURCE_DIR} ${imgui_S
 # Specify the paths to the ImGui backend files
 set(IMGUI_BACKEND_SOURCES
     "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp"
-    "${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp"
+    "${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer3.cpp"
 )
 
 # Add the ImGui backend files to the project

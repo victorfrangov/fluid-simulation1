@@ -1,16 +1,21 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
-#include "imgui.h"
-#include "imgui_impl_opengl3.h"
-#include "imgui_impl_sdl3.h"
+
+#if defined(IMGUI_IMPL_OPENGL_ES2)
+#include <SDL3/SDL_opengles2.h>
+#else
 #include <SDL3/SDL_opengl.h>
+#endif
+
+#include "imgui.h"
+#include "imgui_impl_sdl3.h"
+#include "imgui_impl_sdlrenderer3.h"
 
 #include "globals.h"
+#include "logic.h"
 
-class ImguiBackend;
-
-//#include "imguiBackend.h"
+//class ImguiBackend;
 
 struct SDL_Window;
 struct SDL_Renderer;
@@ -37,7 +42,7 @@ public:
     SDL_Renderer* getRenderer() const;
 
 private:
-    ImguiBackend* _imguiBackend;
+    //ImguiBackend* _imguiBackend;
     Logic& _logic;
     SDL_Window* _window;
     SDL_Renderer* _renderer;

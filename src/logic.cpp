@@ -1,6 +1,5 @@
 #include "logic.h"
 #include <SDL3/SDL.h>
-#include <iostream>
 
 template<typename T1, typename T2>
 constexpr auto IX(T1 i, T2  j) { return ((i) + (globals::N) * (j)); }
@@ -15,10 +14,10 @@ void Logic::draw(Graphics &p_graphics) {
     SDL_SetRenderDrawColor(p_graphics.getRenderer(), 255, 255, 255, 255);
 
     for (int x = 0; x <= globals::SCREEN_SIZE; x += globals::GRID_SIZE) { //vertical lines
-        SDL_RenderLine(p_graphics.getRenderer(), x, 0, x, globals::SCREEN_SIZE);
+        SDL_RenderLine(p_graphics.getRenderer(), x, 0, x, globals::SCREEN_SIZE + globals::OFFSET);
     }
 
-    for (int y = 0; y <= globals::SCREEN_SIZE; y += globals::GRID_SIZE) { //horizontal lines
+    for (int y = globals::OFFSET; y <= globals::SCREEN_SIZE + globals::OFFSET; y += globals::GRID_SIZE) { //horizontal lines
         SDL_RenderLine(p_graphics.getRenderer(), 0, y, globals::SCREEN_SIZE, y);
     }
 
@@ -32,7 +31,7 @@ void Logic::draw(Graphics &p_graphics) {
 
                 SDL_FRect rect;
                 rect.x = newI * globals::GRID_SIZE + 1;
-                rect.y = newJ * globals::GRID_SIZE + 1;
+                rect.y = newJ * globals::GRID_SIZE + globals::OFFSET + 1;
                 rect.w = globals::GRID_SIZE - 1;
                 rect.h = globals::GRID_SIZE - 1;
 
@@ -45,6 +44,10 @@ void Logic::draw(Graphics &p_graphics) {
 
 void Logic::parseMousePos() {
     SDL_GetMouseState(&this->_mouseX, &this->_mouseY);
+    if (this->_mouseX <= 0) this->_mouseX = 1;
+    if (this->_mouseX >= globals::SCREEN_SIZE) this->_mouseX = globals::SCREEN_SIZE - 1;
+    if (this->_mouseY < globals::OFFSET) this->_mouseY = globals::OFFSET;
+    if (this->_mouseY >= globals::SCREEN_SIZE + globals::OFFSET) this->_mouseY = globals::SCREEN_SIZE + globals::OFFSET - 1;
 }
 
 void Logic::update(Uint64 p_dt) {
@@ -58,7 +61,7 @@ void Logic::addDensity(Uint64 p_dt) {
         p = 255.0f;
     }    
     float i = floor(static_cast<int>(this->_mouseX) / globals::GRID_SIZE);
-    float j = floor(static_cast<int>(this->_mouseY) / globals::GRID_SIZE);
+    float j = floor(static_cast<int>(this->_mouseY - globals::OFFSET) / globals::GRID_SIZE);
 
     if (this->_densityGrid[static_cast<int>(IX(i, j))] + p > 255) {
         this->_densityGrid[static_cast<int>(IX(i, j))] = 255;
