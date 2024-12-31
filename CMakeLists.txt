@@ -29,17 +29,17 @@ endif()
 # Install packages based on platform
 if(APPLE)
     execute_process(
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install sdl3:arm64-osx
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install sdl3:arm64-osx imgui:arm64-osx
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 elseif(WIN32)
     execute_process(
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install angle:x64-windows gl3w:x64-windows sdl3:x64-windows imgui:x64-windows imgui[opengl3-binding]:x64-windows
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install sdl3:x64-windows imgui:x64-windows
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 else()
     execute_process(
-        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install sdl3:x64-linux
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/vcpkg install sdl3:x64-linux imgui:x64-linux
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif()
