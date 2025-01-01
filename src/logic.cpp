@@ -1,5 +1,8 @@
 #include "logic.h"
 #include <SDL3/SDL.h>
+#if TARGET_OS_MAC
+#include <math.h>
+#endif
 
 template<typename T1, typename T2>
 constexpr auto IX(T1 i, T2  j) { return ((i) + (globals::N) * (j)); }
@@ -22,7 +25,7 @@ void Logic::draw(Graphics &p_graphics) {
     }
 
 
-    if (this->_mouseX != NULL && this->_mouseY != NULL) {
+    if (this->_mouseX >= 0 && this->_mouseY >= 0) {
         SDL_SetRenderDrawBlendMode(p_graphics.getRenderer(), SDL_BLENDMODE_BLEND);
         for (int a = 0; a < globals::N * globals::N; a++) {
             if (this->_densityGrid[a]) {
@@ -44,7 +47,9 @@ void Logic::draw(Graphics &p_graphics) {
 }
 
 void Logic::parseMousePos() {
-    SDL_GetMouseState(&this->_mouseX, &this->_mouseY);
+    SDL_GetMouseState(&_mouseX, &_mouseY);
+    this->_mouseX = static_cast<float>(_mouseX);
+    this->_mouseY = static_cast<float>(_mouseY);
 
     //Boudaries
     if (this->_mouseX <= 0) this->_mouseX = 1;

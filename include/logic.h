@@ -19,7 +19,7 @@ public:
 	void addDensity(Uint64 p_dt);
 
 private:
-	float _mouseX = NULL;
-	float _mouseY = NULL;
+	float _mouseX = 0.0f;
+	float _mouseY = 0.0f;
 	float _densityGrid[globals::N * globals::N] = { 0.0f };
 };
