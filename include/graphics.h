@@ -1,12 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
-#include <SDL3_image/SDL_image.h>
-
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <SDL3/SDL_opengles2.h>
-#else
 #include <SDL3/SDL_opengl.h>
-#endif
 
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"

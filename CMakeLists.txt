@@ -70,31 +70,18 @@ include("vcpkg/scripts/buildsystems/vcpkg.cmake")
 
 target_include_directories(${PROJECT_NAME} PRIVATE "include")
 
-add_definitions(-DIMGUI_IMPL_SDL_RENDERER)
+#add_definitions(-DIMGUI_IMPL_SDL_RENDERER)
 
 find_package(SDL3 CONFIG REQUIRED)
 find_package(imgui CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 imgui::imgui)
 
-# FetchContent for SDL3_image
-include(FetchContent)
-FetchContent_Declare(
-  SDL3_image
-  GIT_REPOSITORY https://github.com/libsdl-org/SDL_image.git
-  GIT_TAG main
-)
-FetchContent_MakeAvailable(SDL3_image)
-
 # FetchContent for ImGui
-FetchContent_Declare(
-  imgui
-  GIT_REPOSITORY https://github.com/ocornut/imgui.git
-  GIT_TAG v1.91.6
-)
+include(FetchContent)
+FetchContent_Declare(imgui GIT_REPOSITORY https://github.com/ocornut/imgui.git GIT_TAG v1.91.6) # Make sure to use the same version that vcpkg installs
 FetchContent_MakeAvailable(imgui)
 
 # Add include directories _deps
-target_include_directories(${PROJECT_NAME} PRIVATE ${SDL3_image_SOURCE_DIR}/include)
 target_include_directories(${PROJECT_NAME} PRIVATE ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
 
 # Specify the paths to the ImGui backend files
@@ -106,9 +93,6 @@ set(IMGUI_BACKEND_SOURCES
 # Add the ImGui backend files to the project
 target_sources(${PROJECT_NAME} PRIVATE ${IMGUI_BACKEND_SOURCES})
 
-# Link SDL3_image to your project
-target_link_libraries(${PROJECT_NAME} PRIVATE SDL3_image::SDL3_image)
-
 # Copy DLLs only on Windows
 if(WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -116,11 +100,4 @@ if(WIN32)
       $<TARGET_FILE:SDL3::SDL3>
       $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
-
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different
-      $<TARGET_FILE:SDL3_image::SDL3_image>
-      $<TARGET_FILE_DIR:${PROJECT_NAME}>
-    )
-
 endif()

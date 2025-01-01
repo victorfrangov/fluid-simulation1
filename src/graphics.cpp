@@ -8,10 +8,6 @@ Graphics::Graphics(Logic& p_logic) : _logic(p_logic) {
     SDL_CreateWindowAndRenderer("Fluid Simulation", globals::SCREEN_SIZE + 1, globals::SCREEN_SIZE + globals::OFFSET + 1, SDL_WINDOW_OPENGL, &this->_window, &this->_renderer);
     SDL_SetRenderLogicalPresentation(this->_renderer, globals::SCREEN_SIZE + 1, globals::SCREEN_SIZE + globals::OFFSET + 1, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
-    SDL_IOStream* io_image = SDL_IOFromMem(logo_png, logo_png_len);
-    SDL_Surface* surface = IMG_Load_IO(io_image, 1);
-    SDL_SetWindowIcon(this->_window, surface);
-
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 

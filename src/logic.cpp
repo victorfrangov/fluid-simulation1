@@ -1,6 +1,5 @@
 #include "logic.h"
 #include <SDL3/SDL.h>
-#include <vector>
 
 template<typename T1, typename T2>
 constexpr auto IX(T1 i, T2  j) { return ((i) + (globals::N) * (j)); }
