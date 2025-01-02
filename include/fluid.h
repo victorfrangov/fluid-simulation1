@@ -12,11 +12,11 @@ public:
 private:
 	void gameLoop();
 
-	void draw(Uint64 p_currentFPS, Uint64 p_elapsedTime);
+	void draw(Uint64 currentFPS, Uint64 elapsedTime);
 
-	void update(Uint64 p_elapsedTime);
+	void update(Uint64 elapsedTime);
 
-	void handleInput(Input &p_input);
+	void handleInput(Input &input);
 
 	Graphics _graphics;
 	bool _running;

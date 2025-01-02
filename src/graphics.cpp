@@ -1,12 +1,12 @@
 #include "graphics.h"
 #include "logo.h"
 
-Graphics::Graphics(Logic& p_logic) : _logic(p_logic) {
+Graphics::Graphics(Logic& logic) : _logic(logic) {
     SDL_Init(SDL_INIT_VIDEO);
 
     //Make it borderless??
-    SDL_CreateWindowAndRenderer("Fluid Simulation", globals::SCREEN_SIZE + 1, globals::SCREEN_SIZE + globals::OFFSET + 1, SDL_WINDOW_OPENGL, &this->_window, &this->_renderer);
-    SDL_SetRenderLogicalPresentation(this->_renderer, globals::SCREEN_SIZE + 1, globals::SCREEN_SIZE + globals::OFFSET + 1, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    SDL_CreateWindowAndRenderer("Fluid Simulation", g::SCREEN_SIZE + 1, g::SCREEN_SIZE + g::OFFSET + 1, SDL_WINDOW_OPENGL, &this->_window, &this->_renderer);
+    SDL_SetRenderLogicalPresentation(this->_renderer, g::SCREEN_SIZE + 1, g::SCREEN_SIZE + g::OFFSET + 1, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -33,10 +33,6 @@ void Graphics::draw() {
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::ShowDemoWindow();
-
-    ImVec2 p = ImGui::GetWindowPos();
-
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("File")) {
             if (ImGui::MenuItem("Create")) {
@@ -61,10 +57,6 @@ void Graphics::draw() {
 
 }
 
-void Graphics::blitSurface(SDL_Texture* p_texture, SDL_FRect* p_src, SDL_FRect* p_dst) {
-    SDL_RenderTexture(this->_renderer, p_texture, p_src, p_dst);
-}
-
 void Graphics::flip() {
     SDL_RenderPresent(this->_renderer);
 }
@@ -74,8 +66,8 @@ void Graphics::clear() {
     SDL_RenderClear(this->_renderer);
 }
 
-void Graphics::handleEvent(SDL_Event& p_event) {
-    ImGui_ImplSDL3_ProcessEvent(&p_event);
+void Graphics::handleEvent(SDL_Event& event) {
+    ImGui_ImplSDL3_ProcessEvent(&event);
 }
 
 SDL_Renderer* Graphics::getRenderer() const {

@@ -17,19 +17,17 @@ class Logic;
 
 class Graphics {
 public:
-    Graphics(Logic& p_logic);
+    Graphics(Logic& logic);
 
     ~Graphics();
 
     void draw();
 
-    void blitSurface(SDL_Texture* p_texture, SDL_FRect* p_src, SDL_FRect* p_dst);
-
     void flip();
 
     void clear();
 
-    void handleEvent(SDL_Event& p_event);
+    void handleEvent(SDL_Event& event);
 
     SDL_Renderer* getRenderer() const;
 

@@ -52,7 +52,7 @@ void Fluid::gameLoop() {
     }
 }
 
-void Fluid::draw(Uint64 p_currentFPS, Uint64 p_elapsedTime) {
+void Fluid::draw(Uint64 currentFPS, Uint64 elapsedTime) {
     this->_graphics.clear();
 
     this->_graphics.draw();
@@ -60,21 +60,23 @@ void Fluid::draw(Uint64 p_currentFPS, Uint64 p_elapsedTime) {
     this->_graphics.flip();
 }
 
-void Fluid::update(Uint64 p_elapsedTime) {
+void Fluid::update(Uint64 elapsedTime) {
     if (_mouseHeld) {
-        this->_logic.addDensity(p_elapsedTime);
+        this->_logic.addDensity(elapsedTime);
     }
+
+    this->_logic.update(elapsedTime);
 }
 
-void Fluid::handleInput(Input &p_input) {
+void Fluid::handleInput(Input &input) {
     SDL_Event e;
     const SDL_MouseButtonEvent &mouse = e.button;
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_EVENT_KEY_DOWN) {
-            p_input.keyDownEvent(e);
+            input.keyDownEvent(e);
         }
         else if (e.type == SDL_EVENT_KEY_UP) {
-            p_input.keyUpEvent(e);
+            input.keyUpEvent(e);
         }
         else if (e.type == SDL_EVENT_QUIT) {
             this->_running = false;
