@@ -16,11 +16,12 @@ public:
 	void draw(Graphics &graphics);
 	void parseMousePos();
 	void update(Uint64 dt);
-	void addDensity(Uint64 dt);
-	void diffuse(int b, float diff, float dt);
-	void set_bnd(int b);
-	void advect(int b, float dt);
-
+	void addDensity(int dt);
+	void diffuse(int b, float* x, float* x0, float diff, float dt);
+	void set_bnd(int b, float x[]);
+	void advect(int b, float* d, float* d0, float* u, float* v, float dt);
+	void addVelocity(int dt);
+	void drawVelocity(Graphics& graphics);
 private:
 	float _mouseX = 0.0f;
 	float _mouseY = 0.0f;

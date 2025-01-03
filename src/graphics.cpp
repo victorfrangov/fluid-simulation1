@@ -1,6 +1,12 @@
 #include "graphics.h"
 #include "logo.h"
 
+ImGuiIO* io = nullptr;
+
+void initImGuiIO() {
+    io = &ImGui::GetIO();
+};
+
 Graphics::Graphics(Logic& logic) : _logic(logic) {
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -10,7 +16,7 @@ Graphics::Graphics(Logic& logic) : _logic(logic) {
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-
+    initImGuiIO();
     ImGui::StyleColorsDark();
 
     ImGui_ImplSDL3_InitForSDLRenderer(_window, _renderer);
@@ -45,6 +51,7 @@ void Graphics::draw() {
             }
             ImGui::EndMenu();
         }
+        ImGui::Text(" | FPS: %.1f (%.3f ms/frame)", io->Framerate, 1000.0f / io->Framerate);
         ImGui::EndMainMenuBar();
     }
 

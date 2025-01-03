@@ -4,6 +4,7 @@
 #include <math.h>
 #endif
 #include <algorithm>
+#include <iostream>
 
 template<typename T1, typename T2>
 constexpr auto IX(T1 i, T2  j) { return ((i) + (g::N + 2) * (j)); }
@@ -51,6 +52,8 @@ void Logic::draw(Graphics &graphics) {
             }
         }
     }
+
+    this->drawVelocity(graphics);
 }
 
 void Logic::parseMousePos() {
@@ -66,19 +69,17 @@ void Logic::parseMousePos() {
 }
 
 void Logic::update(Uint64 dt) {
-    this->diffuse(0, 0.001f, dt);
-    this->advect(0, dt);
+    //vel step
+    this->diffuse(0, this->_p, this->_p0, 0.001f, dt); std::copy(_p, _p + (g::N + 2) * (g::N + 2), _p0);
+    this->advect(0, this->_p, this->_p0, this->_u, this->_v, dt);
 }
 
-void Logic::addDensity(Uint64 dt) {
+void Logic::addDensity(int dt) { // TIME NOT NEEDED??? because right now, it is related to the frame_time aka the fps target im setting.
     float p = dt / 1.0f;
 
-    if (p > 255.0f) { // not necessary
-        p = 255.0f;
-    }
     // add magnitude here add i + (1 * magnitude)
-    float i = floor(static_cast<int>(this->_mouseX) / g::GRID_SIZE);
-    float j = floor(static_cast<int>(this->_mouseY - g::OFFSET) / g::GRID_SIZE);
+    float i = floor(this->_mouseX / g::GRID_SIZE);
+    float j = floor((this->_mouseY - g::OFFSET) / g::GRID_SIZE);
 
     if (this->_p0[static_cast<int>(IX(i, j))] + p > 255) {
         this->_p0[static_cast<int>(IX(i, j))] = 255;
@@ -88,60 +89,87 @@ void Logic::addDensity(Uint64 dt) {
     }
 }
 
-void Logic::diffuse(int b, float diff, float dt) {
+void Logic::diffuse(int b, float* x, float* x0, float diff, float dt) {
     float a = dt / 1000.0f * diff * g::N * g::N;
+
     for (int k = 0; k < 5; k++) {
         for (int i = 1; i < g::N; i++) {
             for (int j = 1; j < g::N; j++) {
-                _p[IX(i, j)] = (_p0[IX(i, j)] + 
-                    a * (_p[IX(i - 1, j)] + 
-                         _p[IX(i + 1, j)] +
-                         _p[IX(i, j - 1)] + 
-                         _p[IX(i, j + 1)])
+                x[IX(i, j)] = (x0[IX(i, j)] + 
+                    a * (x[IX(i - 1, j)] + 
+                         x[IX(i + 1, j)] +
+                         x[IX(i, j - 1)] + 
+                         x[IX(i, j + 1)])
                         ) / (1 + 4 * a);
             }
         }
-        set_bnd(b);
+        set_bnd(b, x);
     }
-    std::copy(std::begin(this->_p), std::end(this->_p), std::begin(this->_p0));
 }
 
-void Logic::set_bnd(int b) {
+void Logic::set_bnd(int b, float x[]) {
     for (int i = 1; i <= g::N; i++) {
-        _p[IX(0, i)] = b == 1 ? -_p[IX(1, i)] : _p[IX(1, i)];
-        _p[IX(g::N + 1, i)] = b == 1 ? -_p[IX(g::N, i)] : _p[IX(g::N, i)];
-        _p[IX(i, 0)] = b == 2 ? -_p[IX(i, 1)] : _p[IX(i, 1)];
-        _p[IX(i, g::N + 1)] = b == 2 ? -_p[IX(i, g::N)] : _p[IX(i, g::N)];
+        x[IX(0, i)] = b == 1 ? -x[IX(1, i)] : x[IX(1, i)];
+        x[IX(g::N + 1, i)] = b == 1 ? -x[IX(g::N, i)] : x[IX(g::N, i)];
+        x[IX(i, 0)] = b == 2 ? -x[IX(i, 1)] : x[IX(i, 1)];
+        x[IX(i, g::N + 1)] = b == 2 ? -x[IX(i, g::N)] : x[IX(i, g::N)];
     }
-    _p[IX(0, 0)] = 0.5 * (_p[IX(1, 0)] + _p[IX(0, 1)]);
-    _p[IX(0, g::N + 1)] = 0.5 * (_p[IX(1, g::N + 1)] + _p[IX(0, g::N)]);
-    _p[IX(g::N + 1, 0)] = 0.5 * (_p[IX(g::N, 0)] + _p[IX(g::N + 1, 1)]);
-    _p[IX(g::N + 1, g::N + 1)] = 0.5 * (_p[IX(g::N, g::N + 1)] + _p[IX(g::N + 1, g::N)]);
+    x[IX(0, 0)] = 0.5 * (x[IX(1, 0)] + x[IX(0, 1)]);
+    x[IX(0, g::N + 1)] = 0.5 * (x[IX(1, g::N + 1)] + x[IX(0, g::N)]);
+    x[IX(g::N + 1, 0)] = 0.5 * (x[IX(g::N, 0)] + x[IX(g::N + 1, 1)]);
+    x[IX(g::N + 1, g::N + 1)] = 0.5 * (x[IX(g::N, g::N + 1)] + x[IX(g::N + 1, g::N)]);
 }
 
-void Logic::advect(int b, float dt) {
+void Logic::advect(int b, float* d, float* d0, float* u, float* v, float dt) {
     int i0, j0, i1, j1;
     float x, y, s0, t0, s1, t1, dt0;
     dt0 = dt * g::N;
     for (int i = 1; i <= g::N; i++) {
         for (int j = 1; j <= g::N; j++) {
-            x = i - dt0 * _u[IX(i, j)];
-            y = j - dt0 * _v[IX(i, j)];
+            x = i - dt0 * u[IX(i, j)]; y = j - dt0 * v[IX(i, j)];
             if (x < 0.5) x = 0.5;
-            if (x > g::N + 0.5)
-                x = g::N + 0.5;
+            if (x > g::N + 0.5) x = g::N + 0.5;
             i0 = (int)x; i1 = i0 + 1;
             if (y < 0.5) y = 0.5;
             if (y > g::N + 0.5) y = g::N + 0.5;
-            j0 = (int)y;
-            j1 = j0 + 1;
-            s1 = x - i0;
-            s0 = 1 - s1;
-            t1 = y - j0;
-            t0 = 1 - t1;
-            _p[IX(i, j)] = s0 * (t0 * _p0[IX(i0, j0)] + t1 * _p0[IX(i0, j1)]) +
-                s1 * (t0 * _p0[IX(i1, j0)] + t1 * _p0[IX(i1, j1)]);
+            j0 = (int)y; j1 = j0 + 1;
+            s1 = x - i0; s0 = 1 - s1;
+            t1 = y - j0; t0 = 1 - t1;
+            d[IX(i, j)] = s0 * (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) +
+                s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)]);
         }
     }
-    set_bnd(b);
+    set_bnd(b, d);
+}
+
+void Logic::addVelocity(int dt) {
+    float amountX = dt;
+    float amountY = dt;
+    int i = static_cast<int>(this->_mouseX / g::GRID_SIZE);
+    int j = static_cast<int>((this->_mouseY - g::OFFSET) / g::GRID_SIZE);
+
+    if (i >= 1 && i <= g::N - 1 && j >= 1 && j <= g::N - 1) {
+        _u[IX(i, j)] += amountX;
+        _v[IX(i, j)] += amountY; //this will always add velocity towards the bottom right not towards where the mouse is moving
+        //take the previous location of the mouse (0.1s ago) to create a vector
+    }
+}
+
+void Logic::drawVelocity(Graphics& graphics) {
+    SDL_SetRenderDrawColor(graphics.getRenderer(), 0, 255, 0, 255); // Green color for velocity vectors
+
+    for (int i = 1; i <= g::N; i++) {
+        for (int j = 1; j <= g::N; j++) {
+            float x = (i * g::GRID_SIZE) + g::GRID_SIZE / 2;
+            float y = (j * g::GRID_SIZE + g::OFFSET) + g::GRID_SIZE / 2; // Offset everything to be in the center of the cell
+            float u = _u[IX(i, j)];
+            float v = _v[IX(i, j)];
+
+            SDL_RenderLine(graphics.getRenderer(),
+                x,
+                y,
+                x + u * 1,
+                y + v * 1);
+        }
+    }
 }

@@ -1,8 +1,9 @@
 #include <SDL3/SDL.h>
 #include <fluid.h>
+#include <iostream>
 
 namespace {
-    const int FPS_TARGET = 600;
+    const int FPS_TARGET = 120;
     constexpr int MAX_FRAME_TIME = 1000 / FPS_TARGET;
 
     unsigned int frameCount = 0;
@@ -64,7 +65,7 @@ void Fluid::update(Uint64 elapsedTime) {
     if (_mouseHeld) {
         this->_logic.addDensity(elapsedTime);
     }
-
+    
     this->_logic.update(elapsedTime);
 }
 
@@ -86,18 +87,15 @@ void Fluid::handleInput(Input &input) {
         if (!(ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow))) {
             if (e.type == SDL_EVENT_MOUSE_BUTTON_DOWN && mouse.button == SDL_BUTTON_LEFT) {
                 this->_mouseHeld = true;
-                this->_mouseHoldStartTime = SDL_GetTicks();
             }
             else if (e.type == SDL_EVENT_MOUSE_BUTTON_UP && mouse.button == SDL_BUTTON_LEFT) {
                 this->_mouseHeld = false;
             }
 
             if (this->_mouseHeld) {
-                Uint64 currentTime = SDL_GetTicks();
-                Uint64 dt = currentTime - this->_mouseHoldStartTime;
                 this->_logic.parseMousePos();
-                this->_logic.addDensity(dt);
-                this->_mouseHoldStartTime = currentTime;
+                this->_logic.addDensity(MAX_FRAME_TIME);
+                this->_logic.addVelocity(MAX_FRAME_TIME);
             }
         }
         this->_graphics.handleEvent(e);
