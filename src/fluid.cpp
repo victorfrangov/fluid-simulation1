@@ -3,7 +3,7 @@
 #include <iostream>
 
 namespace {
-    const int FPS_TARGET = 120;
+    const int FPS_TARGET = 60;
     constexpr int MAX_FRAME_TIME = 1000 / FPS_TARGET;
 
     unsigned int frameCount = 0;
@@ -39,7 +39,7 @@ void Fluid::gameLoop() {
             lastFpsUpdateTime = currentTimeMs;
         }
 
-        this->update((((static_cast<float>(elapsedTimeMs)) < (MAX_FRAME_TIME)) ? (static_cast<float>(elapsedTimeMs)) : (MAX_FRAME_TIME)));
+        this->update(elapsedTimeMs < MAX_FRAME_TIME ? elapsedTimeMs : MAX_FRAME_TIME);
         lastUpdateTime = currentTimeMs;
 
         this->draw(currentFPS, elapsedTimeMs);
@@ -70,7 +70,7 @@ void Fluid::update(Uint64 elapsedTime) {
 }
 
 void Fluid::handleInput(Input &input) {
-    SDL_Event e;
+    SDL_Event e{};
     const SDL_MouseButtonEvent &mouse = e.button;
     while (SDL_PollEvent(&e)) {
         if (e.type == SDL_EVENT_KEY_DOWN) {

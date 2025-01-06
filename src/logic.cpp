@@ -7,10 +7,16 @@
 #include <iostream>
 
 template<typename T1, typename T2>
-constexpr auto IX(T1 i, T2  j) { return ((i) + (g::N + 2) * (j)); }
+constexpr int IX(T1 i, T2  j) { return (static_cast<int>(i) + (g::N + 2) * static_cast<int>(j)); }
+
+#define swap(x0, x) { std::copy(x, x + (g::N + 2) * (g::N + 2), x0); }
 
 Logic::Logic()
-{}
+{
+    //std::fill(std::begin(_p0), std::end(_p0), 16.0f);
+    //std::fill(std::begin(_u0), std::end(_u0), 16.0f);
+    //std::fill(std::begin(_v0), std::end(_v0), 16.0f);
+}
 
 Logic::~Logic()
 {}
@@ -33,7 +39,7 @@ void Logic::draw(Graphics &graphics) {
     SDL_RenderLine(graphics.getRenderer(), 0, g::GRID_SIZE + g::OFFSET, g::SCREEN_SIZE, g::GRID_SIZE + g::OFFSET); // horitzontal top
     SDL_RenderLine(graphics.getRenderer(), 0, g::SCREEN_SIZE + g::OFFSET - g::GRID_SIZE, g::SCREEN_SIZE, g::SCREEN_SIZE + g::OFFSET - g::GRID_SIZE); // horitzontal bottom
 
-    if (this->_mouseX >= 0 && this->_mouseY >= 0) {
+    if (this->_mouseX >= 0.0f && this->_mouseY >= 0.0f) {
         SDL_SetRenderDrawBlendMode(graphics.getRenderer(), SDL_BLENDMODE_BLEND);
         for (int a = 0; a < (g::N + 2) * (g::N + 2); a++) {
             if (this->_p0[a]) {
@@ -41,7 +47,7 @@ void Logic::draw(Graphics &graphics) {
                 int newJ = floor(a / (g::N + 2)); // vertical pos
                 int newI = a - newJ * (g::N + 2); // horizontal pos
 
-                SDL_FRect rect;
+                SDL_FRect rect{};
                 rect.x = newI * g::GRID_SIZE + 1;
                 rect.y = newJ * g::GRID_SIZE + g::OFFSET + 1;
                 rect.w = g::GRID_SIZE - 1;
@@ -52,7 +58,6 @@ void Logic::draw(Graphics &graphics) {
             }
         }
     }
-
     this->drawVelocity(graphics);
 }
 
@@ -69,8 +74,21 @@ void Logic::parseMousePos() {
 }
 
 void Logic::update(Uint64 dt) {
+    const float visc = 0.001f;
     //vel step
-    this->diffuse(0, this->_p, this->_p0, 0.001f, dt); std::copy(_p, _p + (g::N + 2) * (g::N + 2), _p0);
+    this->diffuse(1, this->_u, this->_u0, visc, dt);
+    this->diffuse(2, this->_v, this->_v0, visc, dt);
+    this->project(this->_u, this->_v, this->_u0, this->_v0);
+
+    swap(this->_u0, this->_u);
+    swap(this->_v0, this->_v);
+
+    this->advect(1, this->_u, this->_u0, this->_u0, this->_v0, dt);
+    this->advect(2, this->_v, this->_v0, this->_u0, this->_v0, dt);
+    this->project(this->_u, this->_v, this->_u0, this->_v0);
+
+    //dens step
+    this->diffuse(0, this->_p, this->_p0, visc, dt); swap(this->_p0, this->_p);
     this->advect(0, this->_p, this->_p0, this->_u, this->_v, dt);
 }
 
@@ -81,11 +99,11 @@ void Logic::addDensity(int dt) { // TIME NOT NEEDED??? because right now, it is 
     float i = floor(this->_mouseX / g::GRID_SIZE);
     float j = floor((this->_mouseY - g::OFFSET) / g::GRID_SIZE);
 
-    if (this->_p0[static_cast<int>(IX(i, j))] + p > 255) {
-        this->_p0[static_cast<int>(IX(i, j))] = 255;
+    if (this->_p0[IX(i, j)] + p > 255) {
+        this->_p0[IX(i, j)] = 255;
     }
     else {
-        this->_p0[static_cast<int>(IX(i, j))] += p;
+        this->_p0[IX(i, j)] += p;
     }
 }
 
@@ -149,13 +167,13 @@ void Logic::addVelocity(int dt) {
     int j = static_cast<int>((this->_mouseY - g::OFFSET) / g::GRID_SIZE);
 
     if (i >= 1 && i <= g::N - 1 && j >= 1 && j <= g::N - 1) {
-        _u[IX(i, j)] += amountX;
-        _v[IX(i, j)] += amountY; //this will always add velocity towards the bottom right not towards where the mouse is moving
+        _u0[IX(i, j)] += amountX;
+        _v0[IX(i, j)] += amountY; //this will always add velocity towards the bottom right not towards where the mouse is moving
         //take the previous location of the mouse (0.1s ago) to create a vector
     }
 }
 
-void Logic::drawVelocity(Graphics& graphics) {
+void Logic::drawVelocity(Graphics& graphics) const {
     SDL_SetRenderDrawColor(graphics.getRenderer(), 0, 255, 0, 255); // Green color for velocity vectors
 
     for (int i = 1; i <= g::N; i++) {
@@ -168,8 +186,39 @@ void Logic::drawVelocity(Graphics& graphics) {
             SDL_RenderLine(graphics.getRenderer(),
                 x,
                 y,
-                x + u * 1,
-                y + v * 1);
+                x + u * 10,
+                y + v * 10);
         }
     }
+}
+
+void Logic::project(float* u, float* v, float* p, float* div) {
+    int i, j, k;
+    float h;
+    h = 1.0f / g::N;
+
+    for (i = 1; i <= g::N; i++) {
+        for (j = 1; j <= g::N; j++) {
+            div[IX(i, j)] = -0.5f * h * (u[IX(i + 1, j)] - u[IX(i - 1, j)] +
+                v[IX(i, j + 1)] - v[IX(i, j - 1)]);
+            p[IX(i, j)] = 0;
+        }
+    }
+    set_bnd(0, div); set_bnd(0, p);
+    for (k = 0; k < 5; k++) {
+        for (i = 1; i <= g::N; i++) {
+            for (j = 1; j <= g::N; j++) {
+                p[IX(i, j)] = (div[IX(i, j)] + p[IX(i - 1, j)] + p[IX(i + 1, j)] +
+                    p[IX(i, j - 1)] + p[IX(i, j + 1)]) / 4;
+            }
+        }
+        set_bnd(0, p);
+    }
+    for (i = 1; i <= g::N; i++) {
+        for (j = 1; j <= g::N; j++) {
+            u[IX(i, j)] -= 0.5f * (p[IX(i + 1, j)] - p[IX(i - 1, j)]) / h;
+            v[IX(i, j)] -= 0.5f * (p[IX(i, j + 1)] - p[IX(i, j - 1)]) / h;
+        }
+    }
+    set_bnd(1, u); set_bnd(2, v);
 }

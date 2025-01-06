@@ -3,7 +3,7 @@
 
 ImGuiIO* io = nullptr;
 
-void initImGuiIO() {
+static void initImGuiIO() {
     io = &ImGui::GetIO();
 };
 
