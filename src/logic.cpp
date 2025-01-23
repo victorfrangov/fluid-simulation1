@@ -12,11 +12,7 @@ constexpr int IX(T1 i, T2  j) { return (static_cast<int>(i) + (g::N + 2) * stati
 #define swap(x0, x) { std::copy(x, x + (g::N + 2) * (g::N + 2), x0); }
 
 Logic::Logic()
-{
-    //std::fill(std::begin(_p0), std::end(_p0), 16.0f);
-    //std::fill(std::begin(_u0), std::end(_u0), 16.0f);
-    //std::fill(std::begin(_v0), std::end(_v0), 16.0f);
-}
+{}
 
 Logic::~Logic()
 {}
@@ -24,20 +20,10 @@ Logic::~Logic()
 void Logic::draw(Graphics &graphics) {
     SDL_SetRenderDrawColor(graphics.getRenderer(), 255, 255, 255, 255);
 
-    /*
-    for (int x = 0; x <= g::SCREEN_SIZE; x += g::GRID_SIZE) { // vertical lines
-        SDL_RenderLine(graphics.getRenderer(), x, 0, x, g::SCREEN_SIZE + g::OFFSET);
-    }
-
-    for (int y = g::OFFSET; y <= g::SCREEN_SIZE + g::OFFSET; y += g::GRID_SIZE) { // horizontal lines
-        SDL_RenderLine(graphics.getRenderer(), 0, y, g::SCREEN_SIZE, y);
-    }
-    */
-
-    SDL_RenderLine(graphics.getRenderer(), g::GRID_SIZE, 0, g::GRID_SIZE, g::SCREEN_SIZE + g::OFFSET); // vertical left
-    SDL_RenderLine(graphics.getRenderer(), g::SCREEN_SIZE - g::GRID_SIZE, 0, g::SCREEN_SIZE - g::GRID_SIZE, g::SCREEN_SIZE + g::OFFSET); // vertical right
-    SDL_RenderLine(graphics.getRenderer(), 0, g::GRID_SIZE + g::OFFSET, g::SCREEN_SIZE, g::GRID_SIZE + g::OFFSET); // horitzontal top
-    SDL_RenderLine(graphics.getRenderer(), 0, g::SCREEN_SIZE + g::OFFSET - g::GRID_SIZE, g::SCREEN_SIZE, g::SCREEN_SIZE + g::OFFSET - g::GRID_SIZE); // horitzontal bottom
+    //SDL_RenderLine(graphics.getRenderer(), g::GRID_SIZE, 0, g::GRID_SIZE, g::SCREEN_SIZE + g::OFFSET); // vertical left
+    //SDL_RenderLine(graphics.getRenderer(), g::SCREEN_SIZE - g::GRID_SIZE, 0, g::SCREEN_SIZE - g::GRID_SIZE, g::SCREEN_SIZE + g::OFFSET); // vertical right
+    //SDL_RenderLine(graphics.getRenderer(), 0, g::GRID_SIZE + g::OFFSET, g::SCREEN_SIZE, g::GRID_SIZE + g::OFFSET); // horitzontal top
+    //SDL_RenderLine(graphics.getRenderer(), 0, g::SCREEN_SIZE + g::OFFSET - g::GRID_SIZE, g::SCREEN_SIZE, g::SCREEN_SIZE + g::OFFSET - g::GRID_SIZE); // horitzontal bottom
 
     if (this->_mouseX >= 0.0f && this->_mouseY >= 0.0f) {
         SDL_SetRenderDrawBlendMode(graphics.getRenderer(), SDL_BLENDMODE_BLEND);

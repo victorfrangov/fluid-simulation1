@@ -10,9 +10,6 @@ public:
 	Logic();
 	~Logic();
 
-	//float getMouseX() { return this->_mouseX;  }
-	//float getMouseY() { return this->_mouseY;  }
-
 	void draw(Graphics &graphics);
 	void parseMousePos();
 	void update(Uint64 dt);
