@@ -20,7 +20,24 @@ static inline void clearDensityBoundaries(float* p) {
     }
 }
 
-Logic::Logic() = default;
+Logic::Logic()
+    : _side(g::N + 2),
+      _count(_side * _side),
+      _pStore(static_cast<size_t>(_count), 0.0f),
+      _p0Store(static_cast<size_t>(_count), 0.0f),
+      _uStore(static_cast<size_t>(_count), 0.0f),
+      _u0Store(static_cast<size_t>(_count), 0.0f),
+      _vStore(static_cast<size_t>(_count), 0.0f),
+      _v0Store(static_cast<size_t>(_count), 0.0f) {
+
+    _p = _pStore.data();
+    _p0 = _p0Store.data();
+    _u = _uStore.data();
+    _u0 = _u0Store.data();
+    _v = _vStore.data();
+    _v0 = _v0Store.data();
+}
+
 Logic::~Logic() = default;
 
 void Logic::update(Uint64 dt) {

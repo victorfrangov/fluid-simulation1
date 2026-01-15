@@ -3,7 +3,7 @@
 #include "globals.h"
 
 #include <SDL3/SDL.h>
-#include <array>
+#include <vector>
 
 class Graphics;
 
@@ -26,7 +26,6 @@ public:
     Logic();
     ~Logic();
 
-    void draw(Graphics& graphics);
     void parseMousePos();
     void update(Uint64 dt);
 
@@ -46,9 +45,6 @@ public:
     void reset();
 
 private:
-    static constexpr int BufferSide = g::N + 2;
-    static constexpr int BufferSize = BufferSide * BufferSide;
-
     void applyDensityDecay(float dtSeconds);
 
     Settings _settings{};
@@ -56,17 +52,20 @@ private:
     float _mouseX = 0.0f;
     float _mouseY = 0.0f;
 
-    std::array<float, BufferSize> _pStore{};
-    std::array<float, BufferSize> _p0Store{};
-    std::array<float, BufferSize> _uStore{};
-    std::array<float, BufferSize> _u0Store{};
-    std::array<float, BufferSize> _vStore{};
-    std::array<float, BufferSize> _v0Store{};
+    int _side = g::N + 2;
+    int _count = (g::N + 2) * (g::N + 2);
 
-    float* _p = _pStore.data();
-    float* _p0 = _p0Store.data();
-    float* _u = _uStore.data();
-    float* _u0 = _u0Store.data();
-    float* _v = _vStore.data();
-    float* _v0 = _v0Store.data();
+    std::vector<float> _pStore;
+    std::vector<float> _p0Store;
+    std::vector<float> _uStore;
+    std::vector<float> _u0Store;
+    std::vector<float> _vStore;
+    std::vector<float> _v0Store;
+
+    float* _p = nullptr;
+    float* _p0 = nullptr;
+    float* _u = nullptr;
+    float* _u0 = nullptr;
+    float* _v = nullptr;
+    float* _v0 = nullptr;
 };
