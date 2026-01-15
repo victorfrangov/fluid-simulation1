@@ -62,8 +62,10 @@ void Fluid::draw(Uint64 currentFPS, Uint64 elapsedTime) {
 }
 
 void Fluid::update(Uint64 elapsedTime) {
+    this->_logic.parseMousePos();
     if (_mouseHeld) {
-        this->_logic.addDensity(elapsedTime);
+        this->_logic.addDensity(static_cast<int>(elapsedTime));
+        this->_logic.addVelocity(static_cast<int>(elapsedTime));
     }
     
     this->_logic.update(elapsedTime);
@@ -92,11 +94,11 @@ void Fluid::handleInput(Input &input) {
                 this->_mouseHeld = false;
             }
 
-            if (this->_mouseHeld) {
-                this->_logic.parseMousePos();
-                this->_logic.addDensity(MAX_FRAME_TIME);
-                this->_logic.addVelocity(MAX_FRAME_TIME);
-            }
+            //if (this->_mouseHeld) {
+            //    this->_logic.parseMousePos();
+            //    this->_logic.addDensity(MAX_FRAME_TIME);
+            //    this->_logic.addVelocity(MAX_FRAME_TIME);
+            //}
         }
         this->_graphics.handleEvent(e);
     }

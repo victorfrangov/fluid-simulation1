@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_opengl.h>
+#include <vector>
 
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
@@ -18,21 +18,22 @@ class Logic;
 class Graphics {
 public:
     Graphics(Logic& logic);
-
     ~Graphics();
 
     void draw();
-
     void flip();
-
     void clear();
-
     void handleEvent(SDL_Event& event);
 
     SDL_Renderer* getRenderer() const;
 
 private:
+    void drawDensityTexture();
+
     Logic& _logic;
     SDL_Window* _window;
     SDL_Renderer* _renderer;
+
+    SDL_Texture* _densityTexture = nullptr;
+    std::vector<Uint32> _densityPixels;
 };
