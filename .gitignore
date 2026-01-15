@@ -14,7 +14,8 @@ vcpkg/
 build/
 .vscode/
 .DS_Store
-
+*.mov
+*.png
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
