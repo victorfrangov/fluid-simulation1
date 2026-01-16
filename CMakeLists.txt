@@ -101,3 +101,5 @@ if(WIN32)
       $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 endif()
+
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
